@@ -33,6 +33,8 @@ abstract class GetMenu extends ProductsEvent
     implements Built<GetMenu, GetMenuBuilder> {
   // fields go here
 
+  String get key;
+
   GetMenu._();
 
   factory GetMenu([updates(GetMenuBuilder b)]) = _$GetMenu;
@@ -43,6 +45,9 @@ abstract class AddItem extends ProductsEvent
   // fields go here
 
   Item get item;
+
+  @nullable
+  String get key;
 
   AddItem._();
 

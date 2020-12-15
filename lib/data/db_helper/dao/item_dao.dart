@@ -7,5 +7,8 @@ abstract class ItemDao {
   Future<void> insertItem(Item item);
 
   @Query('SELECT * FROM Item')
-  Future<List<Item>> getItem();
+  Future<List<Item>> getAllItem();
+
+  @Query('SELECT * FROM Item WHERE key = :key')
+  Future<List<Item>> getItemByKey(String key);
 }

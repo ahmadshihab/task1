@@ -119,10 +119,17 @@ class ClearErrorBuilder implements Builder<ClearError, ClearErrorBuilder> {
 }
 
 class _$GetMenu extends GetMenu {
+  @override
+  final String key;
+
   factory _$GetMenu([void Function(GetMenuBuilder) updates]) =>
       (new GetMenuBuilder()..update(updates)).build();
 
-  _$GetMenu._() : super._();
+  _$GetMenu._({this.key}) : super._() {
+    if (key == null) {
+      throw new BuiltValueNullFieldError('GetMenu', 'key');
+    }
+  }
 
   @override
   GetMenu rebuild(void Function(GetMenuBuilder) updates) =>
@@ -134,24 +141,36 @@ class _$GetMenu extends GetMenu {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is GetMenu;
+    return other is GetMenu && key == other.key;
   }
 
   @override
   int get hashCode {
-    return 821705771;
+    return $jf($jc(0, key.hashCode));
   }
 
   @override
   String toString() {
-    return newBuiltValueToStringHelper('GetMenu').toString();
+    return (newBuiltValueToStringHelper('GetMenu')..add('key', key)).toString();
   }
 }
 
 class GetMenuBuilder implements Builder<GetMenu, GetMenuBuilder> {
   _$GetMenu _$v;
 
+  String _key;
+  String get key => _$this._key;
+  set key(String key) => _$this._key = key;
+
   GetMenuBuilder();
+
+  GetMenuBuilder get _$this {
+    if (_$v != null) {
+      _key = _$v.key;
+      _$v = null;
+    }
+    return this;
+  }
 
   @override
   void replace(GetMenu other) {
@@ -168,7 +187,7 @@ class GetMenuBuilder implements Builder<GetMenu, GetMenuBuilder> {
 
   @override
   _$GetMenu build() {
-    final _$result = _$v ?? new _$GetMenu._();
+    final _$result = _$v ?? new _$GetMenu._(key: key);
     replace(_$result);
     return _$result;
   }
@@ -177,11 +196,13 @@ class GetMenuBuilder implements Builder<GetMenu, GetMenuBuilder> {
 class _$AddItem extends AddItem {
   @override
   final Item item;
+  @override
+  final String key;
 
   factory _$AddItem([void Function(AddItemBuilder) updates]) =>
       (new AddItemBuilder()..update(updates)).build();
 
-  _$AddItem._({this.item}) : super._() {
+  _$AddItem._({this.item, this.key}) : super._() {
     if (item == null) {
       throw new BuiltValueNullFieldError('AddItem', 'item');
     }
@@ -197,17 +218,19 @@ class _$AddItem extends AddItem {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is AddItem && item == other.item;
+    return other is AddItem && item == other.item && key == other.key;
   }
 
   @override
   int get hashCode {
-    return $jf($jc(0, item.hashCode));
+    return $jf($jc($jc(0, item.hashCode), key.hashCode));
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper('AddItem')..add('item', item))
+    return (newBuiltValueToStringHelper('AddItem')
+          ..add('item', item)
+          ..add('key', key))
         .toString();
   }
 }
@@ -219,11 +242,16 @@ class AddItemBuilder implements Builder<AddItem, AddItemBuilder> {
   Item get item => _$this._item;
   set item(Item item) => _$this._item = item;
 
+  String _key;
+  String get key => _$this._key;
+  set key(String key) => _$this._key = key;
+
   AddItemBuilder();
 
   AddItemBuilder get _$this {
     if (_$v != null) {
       _item = _$v.item;
+      _key = _$v.key;
       _$v = null;
     }
     return this;
@@ -244,7 +272,7 @@ class AddItemBuilder implements Builder<AddItem, AddItemBuilder> {
 
   @override
   _$AddItem build() {
-    final _$result = _$v ?? new _$AddItem._(item: item);
+    final _$result = _$v ?? new _$AddItem._(item: item, key: key);
     replace(_$result);
     return _$result;
   }

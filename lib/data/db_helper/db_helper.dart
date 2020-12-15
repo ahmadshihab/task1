@@ -11,9 +11,19 @@ class DbHelper implements IDbHelper {
   @override
   Future<List<Item>> getItem() async {
     try {
-      return await (await getInstDB()).itemDao.getItem();
+      return await (await getInstDB()).itemDao.getAllItem();
     } catch (e) {
-      print('wishList db e is $e');
+      print('$e');
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<List<Item>> getItemByKey(String key) async {
+    try {
+      return await (await getInstDB()).itemDao.getItemByKey(key);
+    } catch (e) {
+      print('error in items$e');
       throw Exception(e.toString());
     }
   }
@@ -23,7 +33,7 @@ class DbHelper implements IDbHelper {
     try {
       return await (await getInstDB()).itemDao.insertItem(item);
     } catch (e) {
-      print('wishList db e is $e');
+      print('$e');
       throw Exception(e.toString());
     }
   }

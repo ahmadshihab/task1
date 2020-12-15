@@ -80,7 +80,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Item` (`id` INTEGER, `name` TEXT, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `Item` (`id` INTEGER, `name` TEXT, `key` TEXT, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -97,8 +97,14 @@ class _$AppDatabase extends AppDatabase {
 class _$ItemDao extends ItemDao {
   _$ItemDao(this.database, this.changeListener)
       : _queryAdapter = QueryAdapter(database),
-        _itemInsertionAdapter = InsertionAdapter(database, 'Item',
-            (Item item) => <String, dynamic>{'id': item.id, 'name': item.name});
+        _itemInsertionAdapter = InsertionAdapter(
+            database,
+            'Item',
+            (Item item) => <String, dynamic>{
+                  'id': item.id,
+                  'name': item.name,
+                  'key': item.key
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -106,14 +112,22 @@ class _$ItemDao extends ItemDao {
 
   final QueryAdapter _queryAdapter;
 
-  static final _itemMapper = (Map<String, dynamic> row) =>
-      Item(id: row['id'] as int, name: row['name'] as String);
+  static final _itemMapper = (Map<String, dynamic> row) => Item(
+      id: row['id'] as int,
+      name: row['name'] as String,
+      key: row['key'] as String);
 
   final InsertionAdapter<Item> _itemInsertionAdapter;
 
   @override
-  Future<List<Item>> getItem() async {
+  Future<List<Item>> getAllItem() async {
     return _queryAdapter.queryList('SELECT * FROM Item', mapper: _itemMapper);
+  }
+
+  @override
+  Future<List<Item>> getItemByKey(String key) async {
+    return _queryAdapter.queryList('SELECT * FROM Item WHERE key = ?',
+        arguments: <dynamic>[key], mapper: _itemMapper);
   }
 
   @override

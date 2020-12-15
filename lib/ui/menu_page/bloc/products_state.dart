@@ -30,8 +30,7 @@ abstract class ProductsState
   factory ProductsState.initail() {
     return ProductsState((b) => b
       ..error = ""
-      ..isLoading = false
-      ..items.replace([])
-      ..menus = null);
+      ..isLoading = true
+      ..items = null);
   }
 }

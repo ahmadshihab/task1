@@ -7,5 +7,7 @@ class Item {
 
   String name;
 
-  Item({this.id, this.name});
+  String key;
+
+  Item({this.id, this.name, this.key});
 }

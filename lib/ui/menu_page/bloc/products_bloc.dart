@@ -21,40 +21,30 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
     if (event is GetMenu) {
       yield state.rebuild((b) => b..items.clear());
-      final result = await _repository.getItem();
 
+      final data = await _repository.getMenus(event.key);
       try {
-        yield state.rebuild((b) => b
-          ..isLoading = true
-          ..error = ""
-          ..items.replace(result)
-          ..menus = null);
-
-        final data = await _repository.getMenus();
-        //print('GetMenus Success data ${data}');
         yield state.rebuild((b) => b
           ..isLoading = false
           ..error = ""
-          ..items.replace(result)
-          ..menus.replace(data));
+          ..items.addAll(data));
       } catch (e) {
         print('GetMenus Error $e');
         yield state.rebuild((b) => b
           ..isLoading = false
-          ..error = "Something went wrong"
-          ..menus = null);
+          ..menus = null
+          ..error = "Something went wrong");
       }
     }
 
     if (event is AddItem) {
-      yield state.rebuild((b) => b..items.clear());
-
       try {
         await _repository.insertItem(event.item);
         final result = await _repository.getItem();
+
         yield state.rebuild((b) => b
           ..isLoading = false
-          ..items.replace([result]));
+          ..items.addAll(result));
       } catch (e) {
         print(e);
         yield state.rebuild((b) => b

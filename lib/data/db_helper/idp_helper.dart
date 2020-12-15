@@ -7,4 +7,6 @@ abstract class IDbHelper {
   Future<void> insertItem(Item item);
 
   Future<List<Item>> getItem();
+
+  Future<List<Item>> getItemByKey(String key);
 }

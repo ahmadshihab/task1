@@ -1,17 +1,24 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:built_collection/built_collection.dart';
+import 'package:built_value/async_serializer.dart';
+import 'package:built_value/built_value.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:task1_app/data/db_helper/db_helper.dart';
 import 'package:task1_app/data/db_helper/entite/item.dart';
+import 'package:task1_app/data/db_helper/idp_helper.dart';
 import 'package:task1_app/data/repository/irepository.dart';
+import 'package:task1_app/data/repository/repository.dart';
 import 'package:task1_app/model/item_model/item_model.dart';
 import 'package:task1_app/ui/menu_page/bloc/products_bloc.dart';
 import 'package:task1_app/ui/menu_page/bloc/products_event.dart';
 import 'package:task1_app/ui/menu_page/bloc/products_state.dart';
-import 'package:task1_app/ui/menu_page/page/menu_tile.dart';
+
 
 import '../../../injection.dart';
 
@@ -23,14 +30,17 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> {
   String type;
   int id = 0;
-  IRepository _iRepository;
+  IRepository _repository;
   Item temp;
+  String key = "models";
+  List<Item> items = List<Item>();
 
   final _bloc = sl<ProductsBloc>();
 
   @override
   void initState() {
-    _bloc.add(GetMenu());
+    _bloc.add(GetMenu((b) => b..key = key));
+    getItems();
     super.initState();
   }
 
@@ -39,10 +49,7 @@ class _MenuPageState extends State<MenuPage> {
     return BlocBuilder(
       bloc: _bloc,
       builder: (BuildContext context, ProductsState state) {
-        // error(state.error);
-        if (state.isLoading) {
-          print(state.items.length);
-          // return Center(child: CircularProgressIndicator());
+        if (!state.isLoading) {
           return Scaffold(
             body: Padding(
               padding: const EdgeInsets.all(12.0),
@@ -51,8 +58,19 @@ class _MenuPageState extends State<MenuPage> {
                   Row(
                     children: [
                       DropdownButton<Item>(
-                        hint: Text("break Type"),
+                        hint: Text(key),
                         items: state.items.map((Item value) {
+                          if (isInDb(items, value.id)) {
+                            print("Item is exist");
+                          } else {
+                            //print("Item not exist");
+                            _bloc.add(AddItem((b) => b
+                              ..key = key
+                              ..item = Item(
+                                  id: value.id, name: value.name, key: key)));
+                          }
+                          //print(value.name);
+
                           return new DropdownMenuItem<Item>(
                             value: value,
                             child: new Text(value.name),
@@ -62,6 +80,7 @@ class _MenuPageState extends State<MenuPage> {
                           setState(() {
                             id = value.id;
                             type = value.name;
+                            key = value.key;
                           });
                         },
                       ),
@@ -78,44 +97,7 @@ class _MenuPageState extends State<MenuPage> {
           );
         }
 
-        return Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    DropdownButton<ItemModel>(
-                      hint: Text("break Type"),
-                      items: state.menus.brakeType.map((ItemModel value) {
-                        // temp = Item(id: value.id, name: value.title);
-                        // print(temp.name);
-
-                        _bloc.add(AddItem((b) =>
-                            b..item = Item(id: value.id, name: value.title)));
-                        return new DropdownMenuItem<ItemModel>(
-                          value: value,
-                          child: new Text(value.title),
-                        );
-                      }).toList(),
-                      onChanged: (ItemModel value) {
-                        setState(() {
-                          id = value.id;
-                          type = value.title;
-                        });
-                      },
-                    ),
-                  ],
-                )
-                // Center(
-                //   child: MenuTile("break type", state.menus),
-                // )
-                //if (_expanded)
-                // Divider()
-              ],
-            ),
-          ),
-        );
+        return Center(child: CircularProgressIndicator());
       },
     );
   }
@@ -132,5 +114,18 @@ class _MenuPageState extends State<MenuPage> {
           fontSize: 16.0);
       _bloc.add(ClearError());
     }
+  }
+
+  bool isInDb(List<Item> items, int itemId) {
+    for (int i = 0; i < items.length; i++) {
+      if (itemId == items[i].id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void getItems() async {
+    items = await _repository.getItem();
   }
 }
